@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LuckySpin - Lottery & Casino</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6b21a8;
+            --secondary: #fbbf24;
+            --background: #1a1a1a;
+            --text: #ffffff;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+        }
+        .game-card {
+            background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+            border: 1px solid #333;
+        }
+        .slot-reel {
+            height: 100px;
+            overflow: hidden;
+            background: #2a2a2a;
+        }
+        .aviator-canvas {
+            background: linear-gradient(180deg, #1a1a2a, #000);
+        }
+        .neon-text {
+            text-shadow: 0 0 10px var(--secondary);
+        }
+        .spin-button {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-purple-900 p-4 fixed w-full top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-yellow-400 neon-text">LuckySpin</h1>
+            <div class="flex items-center gap-4">
+                <span class="text-yellow-400">Balance: $1,000</span>
+                <button class="bg-yellow-400 text-purple-900 px-4 py-2 rounded-full font-semibold">
+                    Deposit
+                </button>
+                <button class="text-white"><i class="bi bi-person-circle text-2xl"></i></button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mx-auto pt-20 px-4">
+        <!-- Games Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <!-- Lottery Card -->
+            <div class="game-card rounded-xl p-6">
+                <h3 class="text-xl font-bold mb-4">Daily Lottery</h3>
+                <p class="text-yellow-400 text-2xl font-bold mb-2">Jackpot: $1,000,000</p>
+                <p class="mb-4">Next draw in: 2h 45m</p>
+                <button class="w-full bg-purple-700 hover:bg-purple-600 text-white py-3 rounded-lg">
+                    Buy Ticket
+                </button>
+            </div>
+
+            <!-- Slot Machine -->
+            <div class="game-card rounded-xl p-6">
+                <h3 class="text-xl font-bold mb-4">Lucky Slots</h3>
+                <div class="flex justify-between gap-2 mb-4">
+                    <div class="slot-reel w-1/3 rounded"></div>
+                    <div class="slot-reel w-1/3 rounded"></div>
+                    <div class="slot-reel w-1/3 rounded"></div>
+                </div>
+                <button onclick="spinSlots()" class="w-full bg-yellow-400 hover:bg-yellow-300 text-purple-900 py-3 rounded-lg font-bold spin-button">
+                    SPIN
+                </button>
+            </div>
+
+            <!-- Aviator Game -->
+            <div class="game-card rounded-xl p-6">
+                <h3 class="text-xl font-bold mb-4">Aviator</h3>
+                <canvas id="aviator" class="aviator-canvas w-full h-40 rounded-lg mb-4"></canvas>
+                <div class="flex gap-2">
+                    <input type="number" class="w-2/3 bg-gray-800 rounded-lg px-4 py-2" placeholder="Bet Amount">
+                    <button onclick="startAviator()" class="w-1/3 bg-green-500 hover:bg-green-400 text-white py-2 rounded-lg">
+                        Fly
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Leaderboard -->
+        <div class="game-card rounded-xl p-6 mb-8">
+            <h3 class="text-xl font-bold mb-4">Top Winners</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-purple-900/50 p-4 rounded-lg">
+                    <p class="text-yellow-400">🏆 User123</p>
+                    <p class="text-sm">Won $50,000 in Lottery</p>
+                </div>
+                <div class="bg-purple-900/50 p-4 rounded-lg">
+                    <p class="text-yellow-400">🎰 Winner789</p>
+                    <p class="text-sm">Won $25,000 in Slots</p>
+                </div>
+                <div class="bg-purple-900/50 p-4 rounded-lg">
+                    <p class="text-yellow-400">✈️ AviatorPro</p>
+                    <p class="text-sm">Won $10,000 in Aviator</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Slot Machine Logic
+        function spinSlots() {
+            const reels = document.querySelectorAll('.slot-reel');
+            reels.forEach(reel => {
+                reel.style.backgroundColor = '#2a2a2a';
+                reel.style.transition = 'all 2s ease-out';
+                setTimeout(() => {
+                    reel.style.backgroundColor = ['#f59e0b', '#ec4899', '#8b5cf6'][Math.floor(Math.random() * 3)];
+                }, 2000);
+            });
+        }
+
+        // Aviator Game Logic
+        let aviatorCanvas = document.getElementById('aviator');
+        let ctx = aviatorCanvas.getContext('2d');
+        let multiplier = 1;
+        let gameRunning = false;
+
+        function startAviator() {
+            if (gameRunning) return;
+            gameRunning = true;
+            multiplier = 1;
+            
+            function drawPlane() {
+                ctx.clearRect(0, 0, aviatorCanvas.width, aviatorCanvas.height);
+                ctx.fillStyle = '#fbbf24';
+                ctx.font = '20px Poppins';
+                ctx.fillText(`${multiplier.toFixed(2)}x`, 20, 30);
+                
+                if (Math.random() < 0.01 || multiplier > 10) {
+                    gameRunning = false;
+                    return;
+                }
+                
+                multiplier += 0.01;
+                requestAnimationFrame(drawPlane);
+            }
+            
+            drawPlane();
+        }
+
+        // Resize canvas
+        function resizeCanvas() {
+            aviatorCanvas.width = aviatorCanvas.offsetWidth;
+            aviatorCanvas.height = aviatorCanvas.offsetHeight;
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+    </script>
+<script>document.body.addEventListener('wheel', e => { if (!e.ctrlKey) return; e.preventDefault(); return }, { passive: false })</script>
+	</body>
+</html>
